@@ -1,2 +1,2 @@
-# sandbox
- firstt_repo
+# GEOINFROMATYKA  RZĄDZI 
+## O - YEEAAAAAH!
