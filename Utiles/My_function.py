@@ -55,5 +55,5 @@ def gui(users_list:list)->None:
                 print("Usuwam uzytkownika")
                 remove_user_from(users_list)
             case "4":
-                print("Usuwam uzytkownika")
+                print("Modyfikuje uzytkownika")
                 print("TODO")
