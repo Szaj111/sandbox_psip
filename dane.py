@@ -8,4 +8,5 @@ users_list: list = [
     {"name":"Oli","nick":"Olinek","posts":42},
     {"name":"Maciej","nick":"Kamienna_twarz","posts":51},
     {"name":"Agatka","nick":"Agacia","posts":55001},
+    {"name":"Szymon","nick":"Specialist","posts":666},
 ]
