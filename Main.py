@@ -8,7 +8,7 @@ def add_user_to(users_list:list) ->None:
     :param users_list: list - user
     :return: None
     """
-    name = input ("podaj imie ?")
+    name = input ("podaj imie? - ")
     posts = input (" Podaj liczbe postow")
     users_list.append({'name':name, "posts": posts })
 
