@@ -29,6 +29,18 @@ def show_users_from(users_list:list) -> None:
     for user in users_list:
         print(f'Twoj znajomy {user["name"]} dodal nastepujaca liczbe postow -  {user["posts"]}')
 
+
+
+def update_user(users_list: list[dict, dict]) -> None:
+    nick_of_user = input('podaj nick uzytkownika do modyfikacji')
+    print(nick_of_user)
+    for user in users_list:
+        if user['nick'] == nick_of_user:
+            print('Znaleziono !!!')
+            user['name'] = input('podaj nowe imie: ')
+            user['nick'] = input('podaj nowa ksywe: ')
+            user['posts'] = int(input('podaj liczbe postow: '))
+
 def gui(users_list:list)->None:
     while True:
         print( f'Menu: \n' 
@@ -56,4 +68,4 @@ def gui(users_list:list)->None:
                 remove_user_from(users_list)
             case "4":
                 print("Usuwam uzytkownika")
-                print("TODO")
+                update_user(users_list)
