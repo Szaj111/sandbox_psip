@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import  re
+import folium
 
 nazwa_miejscowosci = 'Warszawa'
 #pobranie strony
@@ -21,4 +22,16 @@ def get_coordinates_of_(city:str)->list[float, float]:
 
     return [response_html_latitude, response_html_longitude]
 
-print(get_coordinates_of_(nazwa_miejscowosci))
+#print(get_coordinates_of_(nazwa_miejscowosci))
+# zrwoc mape z pinezka odnoszacego sie do uzytkownika podanego z klawiaturtny
+# zwroc mape z wszystkimi uzytkownikami z danej listy (znajomymi)
+
+city = location=get_coordinates_of_(city='Zamość')
+map = folium.Map(city, tiles="OpenStreetMap", zoom_start=12)
+
+folium.Marker(
+    location=city,
+    popup= 'Geoinforamtyka').add_to(map)
+map.save('mapka.html')
+print(map)
+# Rysowanie mapy

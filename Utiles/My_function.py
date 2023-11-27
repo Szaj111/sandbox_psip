@@ -69,3 +69,5 @@ def gui(users_list:list)->None:
             case "4":
                 print("Modyfikuj uzytkownika")
                 update_user(users_list)
+            case '5':
+                print('wyswietl wspo')
