@@ -122,7 +122,10 @@ def gui(users_list:list)->None:
                 for item in users_list:
                     if item['name'] ==user:
                         get_map_one_user(item)
-
             case '6':
                 print("Rysuje mape z uzytkownikami")
                 get_map_of(users_list)
+
+def pogoda_z(miasto: str):
+    url = f'https://danepubliczne.imgw.pl/api/data/synop/station/{miasto}'
+    return requests.get(url).json()
