@@ -1,18 +1,46 @@
+import sqlalchemy
 
-import requests
-class User:
-    def __init__(self, miasto):
-        self.miasto = miasto
+db_params = sqlalchemy.URL.create(
+    drivername='postgresql+psycopg2',
+    username= 'postgres',
+    password= 'psip2023',
+    host= 'localhost',
+    database='postgres',
+    port=5432
+)
 
-    def pogoda_z(self, miasto: str):
-        url = f'https://danepubliczne.imgw.pl/api/data/synop/station/{miasto}'
-        return requests.get(url).json()
+engine = sqlalchemy.create_engine(db_params)
 
-npc_1 = User(miasto='warszawa')
-npc_2 = User(miasto='zamosc')
+connection = engine.connect()
+#sql_query_1 = INSERT INTO public."my_table"(name) VALUES ('Szyszka');
+#sql_query_1 = sqlalchemy.text("INSERT INTO public.my_table(name) VALUES ('kepa');")
+#sql_query_1 = sqlalchemy.text("select * from public.my_table;")
+#user = input('Podaj nazwe zawodnika do usuniecia')
+#sql_query_1 = sqlalchemy.text(f"DELETE FROM public.my_table WHERE name = '{user}';")
+#kogo_zamienic = input('podaj kogo zmienic ')
+#na_kogo= input('podaj na kogo ')
+#sql_query_1 = sqlalchemy.text(f"UPDATE public.my_table SET name= '{na_kogo}' WHERE name = '{kogo_zamienic}';")
 
-print(npc_1.miasto)
-print(npc_2.miasto)
+def dodaj_uzytkownika(user:str):
+    sql_query_1 = sqlalchemy.text(f"INSERT INTO public.my_table(name) VALUES ('{user}');")
+    connection.execute(sql_query_1)
+    connection.commit()
+def usun_uzytkownika(user:str):
+    sql_query_1 = sqlalchemy.text(f"DELETE FROM public.my_table WHERE name = '{user}';")
+    connection.execute(sql_query_1)
+    connection.commit()
+def aktualizuj_uzytkownika(user_1:str,user_2:str):
+    sql_query_1 = sqlalchemy.text(f"UPDATE public.my_table SET name= '{user_1}' WHERE name = '{user_2}';")
+    connection.execute(sql_query_1)
+    connection.commit()
+aktualizuj_uzytkownika(
+    user_1=input('na kogo'),
+    user_2=input('kogo')
 
-print(npc_1.pogoda_z(npc_1.miasto))
-print(npc_2.pogoda_z(npc_2.miasto))
+
+)
+
+cwok ='stasiu'
+usun_uzytkownika(cwok)
+#connection.execute(sql_query_1)
+#connection.commit()
