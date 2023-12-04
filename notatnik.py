@@ -4,7 +4,7 @@ db_params = sqlalchemy.URL.create(
     drivername='postgresql+psycopg2',
     username= 'postgres',
     password= 'psip2023',
-    host= 'localhost',
+    host= 'localhost', 
     database='postgres',
     port=5432
 )
