@@ -1,13 +1,4 @@
-import random
 
-import sqlalchemy
-import  os
-import  sqlalchemy.orm
-from   dotenv import load_dotenv
-from geoalchemy2 import Geometry
-from faker import Faker
-
-load_dotenv()
 
 db_params = sqlalchemy.URL.create(
     drivername='postgresql+psycopg2',

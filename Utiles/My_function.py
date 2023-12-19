@@ -1,8 +1,78 @@
-from bs4 import BeautifulSoup
 import requests
 import folium
-def get_coordinates_of_(city:str)->list[float, float]: # nwm czy to ma byc
-    # pobranie współ str
+import sqlalchemy
+from bs4 import BeautifulSoup
+
+db_params = sqlalchemy.URL.create(
+    drivername='postgresql+psycopg2',
+    username= 'postgres',
+    password= 'psip2023',
+    host= 'localhost',
+    database='postgres',
+    port=5432
+)
+
+engine = sqlalchemy.create_engine(db_params)
+
+connection = engine.connect()
+#dodawanie uzytkownika
+def dodaj_uzytkownika_bazadanych(name, city, nick, posts):
+    query_text = "INSERT INTO public.my_table (name, city, nick, posts) VALUES ('{}','{}','{}','{}')".format(name,city,nick,posts)
+    sql_query_1 = sqlalchemy.text(query_text)
+    connection.execute(sql_query_1)
+    connection.commit()
+def dodaj_użytkownika():
+    name = input ("podaj imie? - ")
+    while True:
+        try:
+            posts = int(input("Podaj liczbe postow - "))
+            break
+        except ValueError:
+            print('nie poprawna wartość')
+    city = input('Podaj miasto - ')
+    nick = input('Podaj nick uzytkownika - ')
+    sql_query_1 = sqlalchemy.text(f"SELECT FROM my_table WHERE nick='{nick}'")
+    result= connection.execute(sql_query_1).all()
+    if result == []:
+        dodaj_uzytkownika_bazadanych(name, city, nick, int(posts))
+    else:
+        print('Podany nick już istnieje')
+        dodaj_użytkownika()
+#WYSWIETLANIE LISTY UZYTKOWNIKOW
+def pokaz_liste_uzytkownikow():
+    sql_query_1 = sqlalchemy.text(f"SELECT * FROM my_table")
+    result= connection.execute(sql_query_1).all()
+    for user in result:
+        print(user[0] + " nick " +user[3]+" jest z miasta "+ user[1] + " liczba jego postów - "+ str(user[2])   )
+
+
+#usuwanie
+def usun_uzytkownika_bazadanych(nick):
+    query_text = "DELETE FROM public.my_table my_table WHERE  nick = :nick"
+    sql_query_1 = sqlalchemy.text(query_text)
+    connection.execute(sql_query_1, {'nick':nick})
+    connection.commit()
+
+def usun_uzytkownika():
+    nick = input ("Podaj nick uzytkownika do usuniecia - ")
+    usun_uzytkownika_bazadanych(nick)
+
+
+# Modyfikacja uzytkownika
+def aktualizuj_uzytkownika_bazadanych(nick, new_name, new_city, new_posts):
+    query_text = "UPDATE public.my_table SET name = :new_name, city = :new_city, posts = :new_posts WHERE nick = :nick"
+    sql_query_1 = sqlalchemy.text(query_text)
+    connection.execute(sql_query_1, {'nick':nick, 'new_name': new_name, 'new_city': new_city, 'new_posts': new_posts})
+    connection.commit()
+def aktualizuj_uzytkownika():
+    nick = input('Wprowadz nick uzytkownika do modyfikacji:  ')
+    new_name= input("Wprowadz nowe imie: ")
+    new_city = input('Wprowadz nowe miasto: ')
+    new_posts = input('Podaj aktualną liczbe postow: ')
+    aktualizuj_uzytkownika_bazadanych(nick,new_name,new_city,new_posts)
+#aktualizuj_uzytkownika()
+
+def get_coordinates_of_(city:str)->list[float, float]:
 
     adres_URL = f'https://pl.wikipedia.org/wiki/{city}'
 
@@ -17,8 +87,14 @@ def get_coordinates_of_(city:str)->list[float, float]: # nwm czy to ma byc
     response_html_longitude = float(response_html_longitude.replace(',','.'))
 
     return [response_html_latitude, response_html_longitude]
-def get_map_one_user(user:str)->None:
-    city =get_coordinates_of_(user["city"])
+
+def get_map_one_user():
+    nick = input('Podaj nick uzytkownika do generowania mapy - ')
+    sql_query_1 = sqlalchemy.text(f"SELECT * FROM my_table WHERE nick = '{nick}'")
+    result = connection.execute(sql_query_1).first()
+    city_str = result[1]
+
+    city =get_coordinates_of_(city_str)
     map = folium.Map(
         location = city,
         tiles="OpenStreetMap",
@@ -26,65 +102,32 @@ def get_map_one_user(user:str)->None:
     )
     folium.Marker(
        location=city,
-       popup=f"Tu rządzi_{user["name"]}"
-             f"Liczba postów{user["posts"]}"
+       popup=f"Tu rządzi_{result[0]}"
+             f"Liczba postów{str(result[2])}"
     ).add_to(map)
-    map.save(f"mapka_{user["name"]}.html")
-def get_map_of(users: list) ->None:
+    map.save(f"mapka_{result[0]}.html")
+def get_map_of():
+    sql_query_1 = sqlalchemy.text("SELECT * FROM my_table")
+    result = connection.execute(sql_query_1).all()
+
     map = folium.Map(
         location=[52.3, 21.0],
         tiles="OpenStreetmap",
         zoom_start=7,
     )
-    for user in users:
+
+    for user in result:
+        city_str = user[1]
+        city = get_coordinates_of_(city_str)
+
         folium.Marker(
-            location=get_coordinates_of_(city=user["city"]),
-            popup=f'Uzytkownik: {user["name"]}'
-                f'Liczba postow {user['posts']}'
+            location=city,
+            popup=f'Użytkownik: {user[0]}'
+                  f' Liczba postów: {str(user[2])}'
         ).add_to(map)
+
     map.save('mapka.html')
-def add_user_to(users_list:list) ->None:
-    """
-    This is object to list
-    :param users_list: list - user
-    :return: None
-    """
-    name = input ("podaj imie? - ")
-    posts = input (" Podaj liczbe postow")
-    users_list.append({'name':name, "posts": posts })
-def remove_user_from(users_list: list) -> None:
-    tmp_list = []
-    name = input("Podaj imie uzytkownika do usuniecia - ")
-    for user in users_list:
-        if user['name'] == name:
-            print(f'Znaleziony uzytkownik {user}')
-            tmp_list.append(user)
-    print("Znaleziono nastepujaych usytkownikow: ")
-    print("0 - usun wszystkich znalezionych uzytkownikow")
-    for numerek, user_to_be_removed in enumerate(tmp_list):
-        print(f'{numerek + 1}{user_to_be_removed}')
-    numer = int(input(f'wybierz uzytkownika do usuniecia: '))
-    if numer == 0:
-        for user in tmp_list:
-            users_list.remove(user)
-    else:
-        users_list.remove(tmp_list[numer - 1])
-
-def show_users_from(users_list:list) -> None:
-    for user in users_list:
-        print(f'Twoj znajomy {user["name"]} dodal nastepujaca liczbe postow -  {user["posts"]}')
-
-
-
-def update_user(users_list: list[dict, dict]) -> None:
-    nick_of_user = input('podaj nick uzytkownika do modyfikacji')
-    print(nick_of_user)
-    for user in users_list:
-        if user['nick'] == nick_of_user:
-            print('Znaleziono !!!')
-            user['name'] = input('podaj nowe imie: ')
-            user['nick'] = input('podaj nowa ksywe: ')
-            user['posts'] = int(input('podaj liczbe postow: '))
+get_map_of()
 
 def gui(users_list:list)->None:
     while True:
@@ -105,23 +148,27 @@ def gui(users_list:list)->None:
                 print("Koncze prace")
                 break
             case "1":
-                print("Wyswietlam uzytkownika")
-                show_users_from(users_list)
+                print("Wyswietlam uzytkownikow")
+                pokaz_liste_uzytkownikow()
             case "2":
                 print("Dodaje uzytkownika")
-                add_user_to(users_list)
+                dodaj_użytkownika()
             case "3":
                 print("Usuwam uzytkownika")
-                remove_user_from(users_list)
+                usun_uzytkownika()
             case "4":
                 print("Modyfikuj uzytkownika")
-                update_user(users_list)
+                aktualizuj_uzytkownika()
             case '5':
                 print('Rysuj mape z uzytkownikiem')
-                user = input("podaj nazwe uzytkownika")
-                for item in users_list:
-                    if item['name'] ==user:
-                        get_map_one_user(item)
+                get_map_one_user()
+                
+
+
             case '6':
                 print("Rysuje mape z uzytkownikami")
-                get_map_of(users_list)
+                get_map_of()
+
+def pogoda_z(miasto: str):
+    url = f'https://danepubliczne.imgw.pl/api/data/synop/station/{miasto}'
+    return requests.get(url).json()
