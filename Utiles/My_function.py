@@ -162,10 +162,7 @@ def gui(users_list:list)->None:
             case '5':
                 print('Rysuj mape z uzytkownikiem')
                 get_map_one_user()
-                # user = input("podaj nazwe uzytkownika")
-                # for item in users_list:
-                #     if item['name'] ==user:
-                #         get_map_one_user(item)
+                
             case '6':
                 print("Rysuje mape z uzytkownikami")
                 get_map_of()
