@@ -1,5 +1,6 @@
 
-
+import sqlalchemy
+import os
 db_params = sqlalchemy.URL.create(
     drivername='postgresql+psycopg2',
     username=os.getenv("POSTGRES_USER"),
