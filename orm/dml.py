@@ -1,4 +1,13 @@
+import random
 
+import sqlalchemy
+import  os
+import  sqlalchemy.orm
+from   dotenv import load_dotenv
+from geoalchemy2 import Geometry
+from faker import Faker
+
+load_dotenv()
 
 db_params = sqlalchemy.URL.create(
     drivername='postgresql+psycopg2',
@@ -22,35 +31,6 @@ class User(Base):
 
 Base.metadata.create_all(engine)
 
-
-
-Session = sqlalchemy.orm.sessionmaker(bind=engine)
-session = Session()
-
-### Create
-lista_users: list = []
-fake = Faker()
-
-# for item in range(10_000):
-#     lista_users.append(
-#       User(
-#         name = fake.name(),
-#         location = f'POINT({random.uniform(14,24)} {random.uniform(49,55)})'
-#
-#     ))
-# session.add_all(lista_users)
-# session.commit()
-
-### Read and select
-
-users_from_db = session.query(User).all()
-for user in users_from_db:
-    if user.name =='Janek':
-        user.name == "Stachu"
-
-#users_from_db = session.query(User),filter(User.name=="Mark Perry")
-session.commit()
-session.flush()
 connection.close()
 engine.dispose()
 

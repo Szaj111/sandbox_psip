@@ -163,6 +163,8 @@ def gui(users_list:list)->None:
                 print('Rysuj mape z uzytkownikiem')
                 get_map_one_user()
                 
+
+
             case '6':
                 print("Rysuje mape z uzytkownikami")
                 get_map_of()
