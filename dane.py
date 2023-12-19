@@ -10,3 +10,12 @@ users_list: list = [
     {"city":"Gdańsk","name":"Agatka","nick":"Agacia","posts":55001},
     {"city":"Zamość","name":"Szymon","nick":"Specialist","posts":666},
 ]
+import sqlalchemy
+class User():
+
+    __tablename__='my_table'
+    id= sqlalchemy.Column(sqlalchemy.Integer(),primary_key=True)
+    city= sqlalchemy.Column(sqlalchemy.String(50), nullable=False)
+    name= sqlalchemy.Column(sqlalchemy.String(50), nullable=False)
+    nick= sqlalchemy.Column(sqlalchemy.String(50), nullable=False)
+    posts= sqlalchemy.Column(sqlalchemy.Integer(), nullable=False)

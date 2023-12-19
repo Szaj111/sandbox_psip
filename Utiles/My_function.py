@@ -127,7 +127,7 @@ def get_map_of():
         ).add_to(map)
 
     map.save('mapka.html')
-get_map_of()
+
 
 def gui(users_list:list)->None:
     while True:
@@ -162,8 +162,6 @@ def gui(users_list:list)->None:
             case '5':
                 print('Rysuj mape z uzytkownikiem')
                 get_map_one_user()
-                
-
 
             case '6':
                 print("Rysuje mape z uzytkownikami")
